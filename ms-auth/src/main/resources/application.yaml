@@ -1,0 +1,24 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: ms-auth
+  datasource:
+    url: jdbc:mysql://mysql-db:3306/morfik_auth_db?createDatabaseIfNotExist=true
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://ms-discovery:8761/eureka/
+
+security:
+  jwt:
+    secret-key: gk++rNiUx83bQVFKEMbRwPryle40/GIA1errK2vsSjs=
+    token-expiration: 600000

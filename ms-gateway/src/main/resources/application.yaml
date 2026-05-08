@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: ms-users
+          uri: lb://ms-users
+          predicates:
+            - Path=/api/users/*
+          filters:
+            - StripPrefix=2
+        - id: ms-products # <--- NUEVA RUTA
+          uri: lb://ms-products
+          predicates:
+            - Path=/api/products/**
+          filters:
+            - StripPrefix=2
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/auth/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://ms-discovery:8761/eureka/

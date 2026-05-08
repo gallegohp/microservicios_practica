@@ -1,0 +1,78 @@
+services:
+  db-users:
+    image: mysql:8.0
+    container_name: db-users
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: users_db
+      MYSQL_USER: camilo
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  ms-discovery:
+    build: ./ms-discovery
+    container_name: ms-discovery
+    ports:
+      - "8761:8761"
+    # Quitamos la sección 'networks' para que use la red por defecto de Docker
+
+  ms-users:
+      build: ./ms-users
+      container_name: ms-users
+      ports:
+        - "8081:8081"
+      depends_on:
+        db-users:
+          condition: service_healthy
+        ms-discovery:
+          condition: service_started
+      environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://db-users:3306/users_db?allowPublicKeyRetrieval=true&useSSL=false
+        SPRING_DATASOURCE_USERNAME: camilo
+        SPRING_DATASOURCE_PASSWORD: mypassword
+        EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://ms-discovery:8761/eureka/
+  ms-gateway:
+    build: ./ms-gateway
+    container_name: ms-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      ms-discovery:
+        condition: service_started
+    environment:
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://ms-discovery:8761/eureka/
+  db-products:
+    image: mysql:8.0
+    container_name: db-products
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: products_db
+      MYSQL_USER: camilo
+      MYSQL_PASSWORD: mypassword
+    ports:
+      - "3308:3306" # Puerto 3308 externo para no chocar con la otra DB
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  ms-products:
+    build: ./ms-products
+    container_name: ms-products
+    ports:
+      - "8082:8082"
+    depends_on:
+      db-products:
+        condition: service_healthy
+      ms-discovery:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-products:3306/products_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: camilo
+      SPRING_DATASOURCE_PASSWORD: mypassword
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://ms-discovery:8761/eureka/
