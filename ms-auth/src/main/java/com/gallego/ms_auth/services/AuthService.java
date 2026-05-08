@@ -1,8 +1,14 @@
 package com.gallego.ms_auth.services;
 
+import java.lang.foreign.Linker.Option;
+import java.util.Optional;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.gallego.ms_auth.dto.HttpGlobalResponse;
+import com.gallego.ms_auth.dto.JwtDTO;
+import com.gallego.ms_auth.dto.LoginRequestDTO;
 import com.gallego.ms_auth.dto.RegisterRequestDTO;
 import com.gallego.ms_auth.dto.RegisterResponseDTO;
 import com.gallego.ms_auth.entity.User;
@@ -56,4 +62,40 @@ public class AuthService {
         responseDTO.setMessage("Se ha registrado correctamente");
         return responseDTO;
     }
+    /**
+     * Inicio de sesion
+     * @param requestDTO
+     * @return HttpGlobalResponse<JwtDTO>
+     */
+    public HttpGlobalResponse<JwtDTO> login(LoginRequestDTO requestDTO) {
+        HttpGlobalResponse<JwtDTO> response = new HttpGlobalResponse<>();
+        Optional<User> userFound = userRepository.findByEmail(requestDTO.getEmail());
+
+        if (userFound.isEmpty()) {
+            response.setMessege("Este usuario no se encuentra registrado");
+            return response;
+        }
+
+        User user = userFound.get();
+
+        if (!passwordEncoder.matches(requestDTO.getPassword(), user.getPassword())) {
+            response.setMessege("Correo o contraseña son incorrectos");
+            return response;
+        }
+
+        JwtDTO jwtDTO = new JwtDTO();
+        String jwt = jwtService.generateToken(user.getId(),user.getRolId(), user.getEmail());
+        jwtDTO.setJwt(jwt);
+        response.setMessege("Inicio de sesion exitoso");
+        response.setData(jwtDTO);
+        return response;
+    }
+
+    public JwtDTO refreshToken(String token) throws Exception {
+        JwtDTO responseDTO = new JwtDTO();
+        String jwt = jwtService.refreshToken(token);
+        responseDTO.setJwt(jwt);
+        return responseDTO;
+    }
+
 }
