@@ -186,11 +186,11 @@ datasource:
 
 ---
 
-## 10. Problema: Error 403 en ms-users via gateway
+## 9. Fix: Error 403 en ms-users via gateway
 
 **Fecha: 10 Mayo 2026**
 
-### Síntoma
+### Problema
 - Al hacer `GET http://localhost:8080/api/users/1` retorna **403 Forbidden**
 
 ### Causa
@@ -198,9 +198,11 @@ datasource:
 - NO existe configuración de Security (SecurityConfig.java) que permita acceso público
 - Por defecto, Spring Security bloquea todas las peticiones
 
-### Solución implementada (Opción A)
+### Solución
 
-**Archivo:** `ms-users/src/main/java/com/gallego/ms_users/config/SecurityConfig.java`
+**A) ms-users/src/main/java/com/gallego/ms_users/config/SecurityConfig.java**
+
+**Nuevo archivo creado:**
 
 ```java
 @Configuration
@@ -212,15 +214,31 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()  // Temporal: permite todo
+                .anyRequest().permitAll()
             );
         return http.build();
     }
 }
 ```
 
-**Archivo:** `ms-users/src/main/java/com/gallego/ms_users/config/AppConfig.java`
-- Provee BCryptPasswordEncoder
+**B) ms-users/src/main/java/com/gallego/ms_users/config/AppConfig.java**
+
+**Nuevo archivo creado:**
+
+```java
+@Configuration
+public class AppConfig {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+
+### Archivos Involucrados
+- ms-users/pom.xml (ya tenía spring-boot-starter-security)
+- ms-users/src/main/java/.../config/SecurityConfig.java (CREADO)
+- ms-users/src/main/java/.../config/AppConfig.java (CREADO)
 
 ### Resultado
 - ✅ Error 403 resuelto
