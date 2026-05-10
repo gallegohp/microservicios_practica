@@ -5,9 +5,9 @@ spring:
   application:
     name: ms-auth
   datasource:
-    url: jdbc:mysql://mysql-db:3306/morfik_auth_db?createDatabaseIfNotExist=true
-    username: root
-    password: root
+    url: jdbc:mysql://db-users:3306/users_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+    username: camilo
+    password: 
   jpa:
     hibernate:
       ddl-auto: none

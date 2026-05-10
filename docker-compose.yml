@@ -19,7 +19,22 @@ services:
     container_name: ms-discovery
     ports:
       - "8761:8761"
-    # Quitamos la sección 'networks' para que use la red por defecto de Docker
+
+  ms-auth:
+    build: ./ms-auth
+    container_name: ms-auth
+    ports:
+      - "8090:8090"
+    depends_on:
+      db-users:
+        condition: service_healthy
+      ms-discovery:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db-users:3306/users_db?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: camilo
+      SPRING_DATASOURCE_PASSWORD: mypassword
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://ms-discovery:8761/eureka/
 
   ms-users:
       build: ./ms-users

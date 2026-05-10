@@ -1,6 +1,5 @@
 package com.gallego.ms_auth.services;
 
-import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,7 +53,7 @@ public class AuthService {
         User user = new User();
         user.setName(requestDTO.getName());
         user.setEmail(requestDTO.getEmail());
-        user.setPassword(requestDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         user.setAge(requestDTO.getAge());
         user.setRolId(requestDTO.getRol());
         userRepository.save(user);
