@@ -186,15 +186,42 @@ datasource:
 
 ---
 
-## 9. Fix: Agregar columnas a tabla user
+## 10. Problema: Error 403 en ms-users via gateway
 
 **Fecha: 10 Mayo 2026**
 
-### Problema
-- La tabla `user` en db-users no tenía columnas `age` ni `rol_id`
-- Ms-auth necesita estas columnas para guardar usuarios
+### Síntoma
+- Al hacer `GET http://localhost:8080/api/users/1` retorna **403 Forbidden**
 
-### Solución
-```sql
-ALTER TABLE user ADD COLUMN age BIGINT, ADD COLUMN rol_id BIGINT;
+### Causa
+- ms-users tiene `spring-boot-starter-security` en pom.xml
+- NO existe configuración de Security (SecurityConfig.java) que permita acceso público
+- Por defecto, Spring Security bloquea todas las peticiones
+
+### Solución implementada (Opción A)
+
+**Archivo:** `ms-users/src/main/java/com/gallego/ms_users/config/SecurityConfig.java`
+
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()  // Temporal: permite todo
+            );
+        return http.build();
+    }
+}
 ```
+
+**Archivo:** `ms-users/src/main/java/com/gallego/ms_users/config/AppConfig.java`
+- Provee BCryptPasswordEncoder
+
+### Resultado
+- ✅ Error 403 resuelto
+- Ahora retorna 404 (endpoint no existe, no bloqueado por seguridad)
