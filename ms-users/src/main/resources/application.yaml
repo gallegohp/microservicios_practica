@@ -16,3 +16,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+security:
+  jwt:
+    secret-key: gk++rNiUx83bQVFKEMbRwPryle40/GIA1errK2vsSjs=
+    token-expiration: 600000

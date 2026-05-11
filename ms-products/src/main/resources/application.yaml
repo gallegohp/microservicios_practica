@@ -13,3 +13,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+security:
+  jwt:
+    secret-key: gk++rNiUx83bQVFKEMbRwPryle40/GIA1errK2vsSjs=
+    token-expiration: 600000
