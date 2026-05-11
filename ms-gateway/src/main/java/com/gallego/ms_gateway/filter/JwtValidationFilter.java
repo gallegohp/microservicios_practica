@@ -1,15 +1,16 @@
-package com.gallego.ms_auth.filter;
+package com.gallego.ms_gateway.filter;
 
 import java.io.IOException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.gallego.ms_auth.services.JwtService;
+import com.gallego.ms_gateway.services.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -72,7 +73,10 @@ public class JwtValidationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        //Estas rutas son publicas, es decir no entras al filtro de arriba
-        return path.startsWith("/auth/login") || path.startsWith("/auth/register") || path.startsWith("/auth/refresh");
+        // Rutas públicas sin JWT (auth)
+        return path.startsWith("/ms-auth/auth/login") 
+            || path.startsWith("/ms-auth/auth/register") 
+            || path.startsWith("/ms-auth/auth/refresh")
+            || path.startsWith("/actuator");
     }
 }

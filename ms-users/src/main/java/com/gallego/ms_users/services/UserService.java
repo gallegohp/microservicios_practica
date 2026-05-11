@@ -1,10 +1,8 @@
 package com.gallego.ms_users.services;
 
 import java.util.List;
-import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import com.gallego.ms_users.repository.UserRepository;
@@ -16,7 +14,6 @@ import com.gallego.ms_users.dto.*;
 public class UserService {
     
     final UserRepository userRepository;
-    final PasswordEncoder passwordEncoder;
 
     /**
      * 
@@ -28,12 +25,9 @@ public class UserService {
         User user = new User();
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
-        
-        // CAMBIO CLAVE: Encriptamos la contraseña usando BCrypt
-        // En lugar de guardar "123", guardaremos algo como "$2a$10$..."
-        String encodedPassword = passwordEncoder.encode(userRequest.getPassword());
-        user.setPassword(encodedPassword); 
-
+        user.setPassword(userRequest.getPassword());
+        user.setRolId(userRequest.getRolId());
+        user.setAge(userRequest.getAge());
         User savedUser = userRepository.save(user);
 
         UserResponseDTO response = new UserResponseDTO();
@@ -61,7 +55,6 @@ public class UserService {
         
     }
     
-
     /**
      * 
      * @return 

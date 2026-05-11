@@ -243,3 +243,42 @@ public class AppConfig {
 ### Resultado
 - ✅ Error 403 resuelto
 - Ahora retorna 404 (endpoint no existe, no bloqueado por seguridad)
+
+---
+
+## 10. Implementar JWT en Gateway (EN PROGRESO)
+
+**Fecha: 10 Mayo 2026**
+
+### Objetivo
+- Gateway valida JWT antes de reenviar a microservicios
+- Endpoints /auth/** públicos sin JWT
+- Otros endpoints requieren JWT válido
+
+### Trabajo realizado
+
+**A) ms-gateway/pom.xml**
+- Agregadas dependencias: jjwt 0.12.5, spring-boot-starter-security
+
+**B) ms-gateway/application.yaml**
+- Agregada configuración JWT:
+```yaml
+security:
+  jwt:
+    secret-key: gk++rNiUx83bQVFKEMbRwPryle40/GIA1errK2vsSjs=
+    token-expiration: 600000
+```
+
+**C) JwtValidationFilter.java (CREADO)**
+- Filter personalizado para validar JWT
+- Extiende AbstractGatewayFilterFactory
+- Pendiente: integrar en rutas
+
+### Estado actual
+- ✅ Compila correctamente
+- ⚠️ Error al cargar filtro en rutas (falta registro correcto)
+- Pendiente: integrar JWTValidationFilter en application.yaml
+
+### Siguiente paso
+- Registrar filtro correctamente como GatewayFilterFactory
+- O usar approach alternativo (Spring Security filters)
