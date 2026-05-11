@@ -13,11 +13,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://ms-discovery:8761/eureka/
-
 security:
   jwt:
     secret-key: gk++rNiUx83bQVFKEMbRwPryle40/GIA1errK2vsSjs=

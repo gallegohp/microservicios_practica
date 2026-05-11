@@ -6,28 +6,25 @@ spring:
     name: ms-gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
       routes:
-        - id: ms-auth-route
-          uri: http://host.docker.internal:8090
+        - id: ms-auth
+          uri: http://ms-auth:8090
           predicates:
             - Path=/ms-auth/**
-        - id: ms-users-route
-          uri: http://host.docker.internal:8081
+          filters:
+            - StripPrefix=1
+        - id: ms-users
+          uri: http://ms-users:8081
           predicates:
             - Path=/ms-users/**
-        - id: ms-products-route
-          uri: http://host.docker.internal:8082
+          filters:
+            - StripPrefix=1
+        - id: ms-products
+          uri: http://ms-products:8082
           predicates:
             - Path=/ms-products/**
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://ms-discovery:8761/eureka/
+          filters:
+            - StripPrefix=1
 
 security:
   jwt:
