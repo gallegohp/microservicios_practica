@@ -19,12 +19,22 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
     
+    /**
+     * Clave secreta para firmar los tokens, se inyecta desde el application.properties
+     */
     @Value("${security.jwt.secret-key}") 
     String secretKey;
     
+    /**
+     * Tiempo de expiracion del token en milisegundos, se inyecta desde el application.properties
+     */
     @Value("${security.jwt.token-expiration}") 
     Long tokenExpiration;
 
+    /**
+     * Transforma la clave secreta de String (base64) a un objeto SecretKey utilizable por la libreria
+     * @return firma secreta
+     */
     private SecretKey getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -41,6 +51,11 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Verifica si el token es valido, comprobando su firma y su fecha de expiracion
+     * @param token
+     * @return
+     */
     public Boolean isTokenValid(String token) {
         try {
             Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token);
@@ -52,6 +67,11 @@ public class JwtService {
         }
     }
 
+    /**
+     * Comprueba si el token pertenece a un usuario con rol de administrador (rolId = 1)
+     * @param token
+     * @return
+     */
     public boolean isAdmin(String token) {
         try {
             Claims claims = Jwts.parser()
@@ -68,6 +88,14 @@ public class JwtService {
         }
     }
 
+    /**
+     * Extrae el nombre de usuario del token
+     * @param token
+     * @param <T>
+     * @param token
+     * @param resolver
+     * @return
+     */
     public <T> T extractClaims(String token, Function<Claims, T> resolver) {
         final Claims claims = Jwts.parser()
                 .verifyWith(getSignKey())
@@ -77,18 +105,39 @@ public class JwtService {
         return resolver.apply(claims);
     }
 
+    /**
+     * Extrae el nombre de usuario del token
+     * @param token
+     * @return
+     */
     public String extractUsername(String token) {
         return extractClaims(token, Claims::getSubject);
     }
 
+    /**
+     * Extrae el id del usuario del token
+     * @param token
+     * @return
+     */
     public Long extractUserId(String token) {
         return extractClaims(token, claims -> claims.get("userId", Long.class));
     }
 
+    /**
+     * Extrae el rol del usuario del token
+     * @param token
+     * @return
+     */
     public Long extractRolId(String token) {
         return extractClaims(token, claims -> claims.get("rolId", Long.class));
     }
 
+    /**
+     * Refrescar el token de seguridad, generando uno nuevo con la misma informacion pero con una nueva fecha de expiracion
+     * @param token
+     * @return
+     * @throws Exception
+     */
     public String refreshToken(String token) throws Exception {
         Claims claims;
         try {

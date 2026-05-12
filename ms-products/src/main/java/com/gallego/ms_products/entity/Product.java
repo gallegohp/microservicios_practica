@@ -10,7 +10,7 @@ import lombok.*;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //no recomienda usar IDENTITY en MySQL, pero es lo que se suele usar en Spring Boot
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)

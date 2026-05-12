@@ -45,6 +45,11 @@ public class ProductController {
         return jwtService.isTokenValid(token);
     }
 
+    /**
+     * Valida si el usuario tiene rol de administrador (rolId = 1) antes de permitir el acceso a los endpoints protegidos para administradores.
+     * @param request
+     * @return boolean
+     */
     private boolean isAdmin(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 @Data
 public class MessegeGlobalDTO {
     
+    /**
+     * Mensaje global para respuestas de error o exito
+     */
     private String message;
 
 }

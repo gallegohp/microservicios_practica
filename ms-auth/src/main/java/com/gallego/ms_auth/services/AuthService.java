@@ -6,12 +6,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.gallego.ms_auth.dto.HttpGlobalResponse;
-import com.gallego.ms_auth.dto.JwtDTO;
 import com.gallego.ms_auth.dto.LoginRequestDTO;
 import com.gallego.ms_auth.dto.RegisterRequestDTO;
 import com.gallego.ms_auth.dto.RegisterResponseDTO;
 import com.gallego.ms_auth.entity.User;
 import com.gallego.ms_auth.repository.UserRepository;
+import com.gallego.ms_common.dto.JwtDTO;
+import com.gallego.ms_common.service.JwtService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -90,6 +91,12 @@ public class AuthService {
         return response;
     }
 
+    /**
+     * Refresco del jwt
+     * @param token
+     * @return JwtDTO
+     * @throws Exception
+     */
     public JwtDTO refreshToken(String token) throws Exception {
         JwtDTO responseDTO = new JwtDTO();
         String jwt = jwtService.refreshToken(token);

@@ -5,7 +5,8 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.gallego.ms_gateway.services.JwtService;
+import com.gallego.ms_common.dto.MessegeGlobalDTO;
+import com.gallego.ms_common.service.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -76,7 +77,6 @@ public class JwtValidationFilter extends OncePerRequestFilter {
         // Rutas públicas sin JWT (auth)
         return path.startsWith("/ms-auth/auth/login") 
             || path.startsWith("/ms-auth/auth/register") 
-            || path.startsWith("/ms-auth/auth/refresh")
-            || path.startsWith("/actuator");
+            || path.startsWith("/ms-auth/auth/refresh");
     }
 }
