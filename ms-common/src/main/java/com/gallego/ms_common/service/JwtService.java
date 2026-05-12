@@ -52,6 +52,22 @@ public class JwtService {
         }
     }
 
+    public boolean isAdmin(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(getSignKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+            Long rolId = claims.get("rolId", Long.class);
+            return rolId != null && rolId == 1L;
+        } catch (JwtException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public <T> T extractClaims(String token, Function<Claims, T> resolver) {
         final Claims claims = Jwts.parser()
                 .verifyWith(getSignKey())

@@ -16,9 +16,9 @@ public class UserService {
     final UserRepository userRepository;
 
     /**
-     * 
+     * Crea un nuevo usuario a partir de un UserRequestDTO y lo guarda en la base de datos.
      * @param userRequest
-     * @return 
+     * @return UserResponseDTO
      */
     public UserResponseDTO createUser(UserRequestDTO userRequest) {
         
@@ -38,9 +38,9 @@ public class UserService {
     }
 
     /**
-     * 
+     * Obtiene un usuario por su ID y lo convierte a UserResponseDTO.
      * @param id
-     * @return 
+     * @return UserResponseDTO
      */
     public UserResponseDTO getUserById(Long id) {
         User user = userRepository.findById(id)
@@ -56,8 +56,8 @@ public class UserService {
     }
     
     /**
-     * 
-     * @return 
+     * Obtiene todos los usuarios de la base de datos y los convierte a una lista de UserResponseDTO.
+     * @return List<UserResponseDTO>
      */
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();

@@ -17,9 +17,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 public class UserController {
     
+    /**
+     * Inyección de dependencias para UserService
+     */
     private final UserService userService;
+    
+    /**
+     * Inyección de dependencias para JwtService, utilizado para validar el token JWT en cada endpoint protegido.
+     */
     private final JwtService jwtService;
 
+    /**
+     * Valida el token JWT del usuario antes de permitir el acceso a los endpoints protegidos.
+     * @param request
+     * @return boolean
+     */
     private boolean isValidToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -29,6 +41,12 @@ public class UserController {
         return jwtService.isTokenValid(token);
     }
 
+    /**
+     * Crea un nuevo usuario. Solo accesible para usuarios autenticados.
+     * @param userRequest
+     * @param request
+     * @return ResponseEntity<UserResponseDTO>
+     */
     @PostMapping
     public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserRequestDTO userRequest, HttpServletRequest request) {
         if (!isValidToken(request)) {
@@ -38,6 +56,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
+    /**
+     * Obtiene un usuario por su ID. Solo accesible para usuarios autenticados.
+     * @param id
+     * @param request
+     * @return ResponseEntity<UserResponseDTO>
+     */
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id, HttpServletRequest request) {
         if (!isValidToken(request)) {
@@ -47,6 +71,11 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Obtiene todos los usuarios. Solo accesible para usuarios autenticados.
+     * @param request
+     * @return ResponseEntity<List<UserResponseDTO>>
+     */
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers(HttpServletRequest request) {
         if (!isValidToken(request)) {
